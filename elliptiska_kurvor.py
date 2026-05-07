@@ -55,7 +55,9 @@ class Punkt:
 
     def __neg__(self):
         if self.är_oändlig: return self
-        return self.kurva.vid(self.x, (-self.y) % self.kurva.p)
+        inv = self.kurva.vid(self.x, (-self.y) % self.kurva.p)
+        assert inv is not None
+        return inv
 
     def invertera(self): return self.__neg__()
 
@@ -72,15 +74,17 @@ class Punkt:
         if type(other) != int:
             raise TypeError("Kan endast multiplicera en punkt med ett heltal")
 
-        if not other > 0:
-            raise NotImplementedError("Negativ multiplikation har ej implementerats. Implementera gärna själv, och skapa en pull request.")
+        if other < 0:
+            return self.invertera() * other
 
         mask = other
         tvåpotens = self
         summa = self.kurva.oändligheten
         while mask:
             if mask & 1 == 1:
+                assert summa is not None
                 summa += tvåpotens
+            assert tvåpotens is not None
             tvåpotens = tvåpotens + tvåpotens
             mask >>= 1
 
